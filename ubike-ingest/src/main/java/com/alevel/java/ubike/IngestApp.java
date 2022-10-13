@@ -14,6 +14,7 @@ public class IngestApp {
     private static final Logger log = LoggerFactory.getLogger(IngestApp.class);
 
     public static void main(String[] args) {
+        new IngestApp().runAddData();
         new IngestApp().run();
     }
 
