@@ -3,11 +3,11 @@ package com.alevel.java.ubike.command;
 import com.alevel.java.ubike.command.data.CreateWaypointRequest;
 import com.alevel.java.ubike.exceptions.UbikeIngestException;
 import com.alevel.java.ubike.model.Waypoint;
-import com.alevel.java.ubike.model.dto.WaypointDTO;
+import com.alevel.java.ubike.model.dto.Coordinates;
 import jakarta.persistence.EntityTransaction;
 import org.hibernate.SessionFactory;
 
-public class IngestWaypointCommand implements Command<WaypointDTO> {
+public class IngestWaypointCommand implements Command<Coordinates> {
 
     private final SessionFactory sessionFactory;
 
@@ -19,10 +19,10 @@ public class IngestWaypointCommand implements Command<WaypointDTO> {
     }
 
     @Override
-    public WaypointDTO execute() throws UbikeIngestException {
+    public Coordinates execute() throws UbikeIngestException {
 
         if (waypointRequest.altitude() == null || waypointRequest.longitude() == null) {
-            throw new UbikeIngestException("No waypoint");
+            throw new UbikeIngestException("No Waypoint");
         }
 
         EntityTransaction tx = null;
@@ -37,7 +37,7 @@ public class IngestWaypointCommand implements Command<WaypointDTO> {
 
             session.persist(waypoint);
 
-            var result = new WaypointDTO(
+            var result = new Coordinates(
                     waypoint.getAltitude(),
                     waypoint.getLongitude()
             );
