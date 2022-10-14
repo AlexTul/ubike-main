@@ -24,7 +24,66 @@ public class IngestAddDataInteractiveCLI {
 
         var scanner = new Scanner(System.in);
 
-        // Input Waypoint
+        Mode mode = getMode(scanner);
+
+        var output = switch (mode) {
+            case ADDWaypoint -> getWaypointFromUser(scanner); // Input Waypoint
+            case ADDRider -> getRiderFromUser(scanner); // Input Rider
+            case ADDVehicle -> getVehicleFromUser(scanner); // Input Vehicle's waypoint location id
+        };
+
+        // Output created
+        outputResultAddFromUser(output);
+
+    }
+
+    private static void outputResultAddFromUser(Record output) {
+
+        // Output created Waypoint in DataBase
+        if (output instanceof Coordinates) {
+            System.out.printf("Created Waypoint in DataBase with altitude: %f, longitude: %f",
+                    ((Coordinates) output).altitude(),
+                    ((Coordinates) output).longitude());
+        }
+
+        // Output created Rider in DataBase
+        if (output instanceof RiderDTO) {
+            System.out.printf("Created Rider in DataBase with nickname: %s",
+            ((RiderDTO) output).nickname());
+        }
+
+        // Output created Vehicle's waypoint location id
+        if (output instanceof VehicleDTO) {
+            System.out.printf("Created Vehicle's waypoint location id in DataBase: %d",
+                    ((VehicleDTO) output).locationId());
+        }
+
+    }
+
+    private VehicleDTO getVehicleFromUser(Scanner scanner) throws UbikeIngestException {
+        System.out.println("Enter Vehicle's waypoint location id:");
+        long vehicleId = scanner.nextLong();
+
+        Command<VehicleDTO> commandVehicle = commandFactoryAddData.ingestAddVehicle(new CreateVehicleRequest(
+                vehicleId
+        ));
+
+        return commandVehicle.execute();
+    }
+
+    private RiderDTO getRiderFromUser(Scanner scanner) throws UbikeIngestException {
+        System.out.println("Enter Rider's nickname:");
+        String nickname = scanner.nextLine();
+
+        Command<RiderDTO> commandRider = commandFactoryAddData.ingestAddRider(new CreateRiderRequest(
+                nickname
+        ));
+
+        return commandRider.execute();
+    }
+
+    private Coordinates getWaypointFromUser(Scanner scanner) throws UbikeIngestException {
+
         System.out.println("Enter Waypoint's altitude:");
         double altitude = scanner.nextDouble();
 
@@ -38,40 +97,30 @@ public class IngestAddDataInteractiveCLI {
                 coordinates.longitude()
         ));
 
-        Coordinates waypoint= commandWaypoint.execute();
+        return commandWaypoint.execute();
+    }
 
-        // Input Rider
-        System.out.println("Enter Rider's nickname:");
-        String nickname = scanner.nextLine();
+    private static Mode getMode(Scanner scanner) {
+        Mode mode;
 
-        Command<RiderDTO> commandRider = commandFactoryAddData.ingestAddRider(new CreateRiderRequest(
-                nickname
-        ));
+        do {
+            System.out.printf("Input mode:%n0: add Waypoint%n1: add Rider%n2: add Vehicle%n");
+            mode = switch (scanner.nextInt()) {
+                case 0 -> Mode.ADDWaypoint;
+                case 1 -> Mode.ADDRider;
+                case 2 -> Mode.ADDVehicle;
+                default -> null;
+            };
+            scanner.nextLine();
 
-        RiderDTO rider = commandRider.execute();
+        } while (mode == null);
 
-        // Input Vehicle's waypoint location id
-        System.out.println("Enter Vehicle's waypoint location id:");
-        long vehicleId = scanner.nextLong();
+        return mode;
+    }
 
-        Command<VehicleDTO> commandVehicle = commandFactoryAddData.ingestAddVehicle(new CreateVehicleRequest(
-                vehicleId
-        ));
-
-        VehicleDTO vehicle = commandVehicle.execute();
-
-        // Output created Waypoint in DataBase
-        System.out.printf("Created Waypoint in DataBase with altitude: %f, longitude: %f",
-                waypoint.altitude(),
-                waypoint.longitude());
-
-        // Output created Rider in DataBase
-        System.out.printf("Created Rider in DataBase with nickname: %s",
-                rider.nickname());
-
-        // Output created Vehicle's waypoint location id
-        System.out.printf("Created Vehicle's waypoint location id in DataBase: %d",
-                vehicle.locationId());
+    private enum Mode {
+        ADDWaypoint, ADDRider, ADDVehicle
     }
 
 }
+
