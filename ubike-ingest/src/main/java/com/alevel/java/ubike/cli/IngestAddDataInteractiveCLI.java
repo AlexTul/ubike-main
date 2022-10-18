@@ -63,6 +63,7 @@ public class IngestAddDataInteractiveCLI {
     private VehicleDTO getVehicleFromUser(Scanner scanner) throws UbikeIngestException {
         System.out.println("Enter Vehicle's waypoint location id:");
         long vehicleId = scanner.nextLong();
+        scanner.nextLine();
 
         Command<VehicleDTO> commandVehicle = commandFactoryAddData.ingestAddVehicle(new CreateVehicleRequest(
                 vehicleId
@@ -86,9 +87,11 @@ public class IngestAddDataInteractiveCLI {
 
         System.out.println("Enter Waypoint's altitude:");
         double altitude = scanner.nextDouble();
+        scanner.nextLine();
 
         System.out.println("Enter Waypoint's longitude:");
         double longitude = scanner.nextDouble();
+        scanner.nextLine();
 
         Coordinates coordinates = new Coordinates(altitude, longitude);
 
