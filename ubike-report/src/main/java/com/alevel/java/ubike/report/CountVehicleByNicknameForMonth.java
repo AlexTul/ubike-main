@@ -28,17 +28,24 @@ public class CountVehicleByNicknameForMonth implements Report<Integer> {
 
         Timestamp finish = Timestamp.from(date.atStartOfDay().plusMonths(1).toInstant(ZoneOffset.UTC));
 
+//        String sql = """
+//                select count(distinct (r.vehicle_id)) as result
+//                from rides r
+//                where r.rider_id = (select rr.id from riders rr where rr.nickname = '?')
+//                and r.started_at >= ? and r.finished_at <= ?
+//                """;
+
         String sql = """
                 select count(distinct (r.vehicle_id)) as result
                 from rides r
-                where r.rider_id = (select rr.id from riders rr where rr.nickname = '?')
+                join riders r2 on r.rider_id = r2.id where r2.nickname = '?'
                 and r.started_at >= ? and r.finished_at <= ?
                 """;
 
         try (PreparedStatement query = connectionSupplier.get().prepareStatement(sql)) {
             query.setString(1, nickname);
-            query.setTimestamp(1, start);
-            query.setTimestamp(2, finish);
+            query.setTimestamp(2, start);
+            query.setTimestamp(3, finish);
 
             ResultSet resultSet = query.executeQuery();
 

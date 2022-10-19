@@ -6,7 +6,6 @@ import java.util.Properties;
 
 public class PropertiesConfig {
 
-
     public Properties jdbcProperties() {
         try (var in = getClass().getClassLoader().getResourceAsStream("jdbc.properties")) {
             var properties = new Properties();
@@ -16,6 +15,5 @@ public class PropertiesConfig {
             throw new UncheckedIOException(e);
         }
     }
-
 
 }

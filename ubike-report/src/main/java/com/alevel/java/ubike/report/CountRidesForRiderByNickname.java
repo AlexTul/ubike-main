@@ -22,10 +22,16 @@ public class CountRidesForRiderByNickname implements Report<Integer> {
     @Override
     public Integer load() throws UbikeReportException {
 
+//        String sql = """
+//                select count(r.id) as result
+//                from rides r
+//                where r.rider_id = (select rr.id from riders rr where rr.nickname = '?')
+//                """;
+
         String sql = """
                 select count(r.id) as result
                 from rides r
-                where r.rider_id = (select rr.id from riders rr where rr.nickname = '?')
+                join riders r2 on r.rider_id = r2.id where r2.nickname = '?'
                 """;
 
         try (PreparedStatement query = connectionSupplier.get().prepareStatement(sql)) {
