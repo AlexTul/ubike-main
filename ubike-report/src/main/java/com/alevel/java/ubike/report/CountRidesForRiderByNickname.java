@@ -28,6 +28,7 @@ public class CountRidesForRiderByNickname implements Report<Integer> {
 //                where r.rider_id = (select rr.id from riders rr where rr.nickname = '?')
 //                """;
 
+
         String sql = """
                 select count(r.id) as result
                 from rides r

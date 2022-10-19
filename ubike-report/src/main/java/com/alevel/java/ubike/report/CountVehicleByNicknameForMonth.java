@@ -35,6 +35,7 @@ public class CountVehicleByNicknameForMonth implements Report<Integer> {
 //                and r.started_at >= ? and r.finished_at <= ?
 //                """;
 
+
         String sql = """
                 select count(distinct (r.vehicle_id)) as result
                 from rides r
